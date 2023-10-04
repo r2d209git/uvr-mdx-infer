@@ -75,7 +75,12 @@ class Predictor:
             n_fft=args["n_fft"]
         )
         
-        self.model = ort.InferenceSession(args['model_path'])
+        if torch.cuda.is_available():
+            self.model = ort.InferenceSession(args['model_path'], providers=["CUDAExecutionProvider"])
+        else:
+            self.model = ort.InferenceSession(args['model_path'])
+        
+        #self.model = ort.InferenceSession("/home/jupyter/whisper/denoise_models/UVR-MDX-NET-Inst_Main.onnx")
 
     def demix(self, mix):
         samples = mix.shape[-1]
